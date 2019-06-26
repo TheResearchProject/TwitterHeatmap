@@ -1,14 +1,13 @@
 # TweetCollector
-This is a python application that scrapes tweets from a geotagged location (in this case a box around the Los Angeles area) and stores them into a local database using Mongodb
+This is a python application that scrapes tweets from a geotagged location (in this case a box near the Los Angeles area) and displays a heatmap where people are tweeting from.
+
+## Technologies used
+- tweepy Twitter API to scrape tweets (https://www.tweepy.org/)
+- folium to display map (https://python-visualization.github.io/folium/)
+- pandas, matplotlib, and seaborn for data manipulation
 
 ## Usage
-Assuming you have Mongodb installed and running locally, just run
 ```
 python main.py
 ```
-This should begin the script and begin scraping tweets and display the timestamp.
-
-TODO:
-- Fix script runtime
-- Display tweets onto heatmap using Folium
-- Make geocode modular
+This should begin the script and display the map in the html file
