@@ -11,11 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from selenium import webdriver
-
-# Create Map to display locations
-m = folium.Map(location=[34.0522, -118.2437], zoom_start=10)
-m.save('map.html')
-print("Map generated")
+import threading
 
 # Get authentication keys from file
 f = open("keys.txt", "r")
@@ -35,19 +31,33 @@ api = tweepy.API(auth)
 
 # Read data from csv and add to heatmap
 def HeatMap():
+    m = folium.Map(location=[34.0522, -118.2437], zoom_start=8)
+    m.save('map.html')
+    print("Map generated")
     df = pd.read_csv('data.csv')
-    arr = df[['latitude', 'longitude']].as_matrix()
+    arr = df[['latitude', 'longitude']].values
     m.add_child(plugins.HeatMap(arr, radius=15))
     m.save('map.html')
+
+# Function to run a function for a certain amount of time
+def set_interval(func, sec):
+    def func_wrapper():
+        set_interval(func, sec)
+        func()
+    t = threading.Timer(sec, func_wrapper)
+    t.start()
+    return t
+
+# Refresh heatmap every x seconds
+x = 10
+set_interval(HeatMap, x)
 
 with open('data.csv', mode='a') as csv_file:
     fieldnames = ['latitude', 'longitude', 'date_created']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
     class StreamListener(tweepy.StreamListener):
-        def __init__(self, time_limit=20):
-            self.start_time = time.time()
-            self.limit = time_limit
+        def __init__(self):
             super(StreamListener, self).__init__()
 
         def on_connect(self):
@@ -55,20 +65,23 @@ with open('data.csv', mode='a') as csv_file:
 
         def on_data(self, data):
             try:
-                if (time.time() - self.start_time) < self.limit:
-                    datajson = json.loads(data)
-                    created_at = datajson["created_at"]
+                # Get data from tweet
+                datajson = json.loads(data)
+                created_at = datajson["created_at"]
 
-                    # Longitude first, then latitude
+                # Longitude first, then latitude
+                if(datajson["coordinates"]):
+                    # Coordinates from tweet
                     coordinates = datajson["coordinates"]["coordinates"]
-                    if(coordinates):
-                        writer.writerow({'latitude': coordinates[1], 'longitude': coordinates[0], 'date_created': created_at})
-                        print(coordinates[1], coordinates[0])
-                        HeatMap()
-                    return True
-                else:
-                    print("Ending stream")
-                    return False
+                    latitude = coordinates[1]
+                    longitude = coordinates[0]
+
+                    # Check if latitude and longitude are floats
+                    if(isinstance(latitude, float) and isinstance(longitude, float)):
+                        # Write to csv file
+                        writer.writerow({'latitude': latitude, 'longitude': longitude, 'date_created': created_at})
+                        print(latitude, longitude)
+                return True
             except Exception as e:
                 print(e)
 
@@ -83,9 +96,8 @@ with open('data.csv', mode='a') as csv_file:
             # return True # Don't kill the stream
 
     # Streams tweets from box around Los Angeles, CA area
-    GEOBOX_LA = [-118.4737,33.9332,-118.0206,34.2039]
+    GEOBOX_LA = [-119.2279,33.4263,-116.8997,34.7189]
     sapi = tweepy.streaming.Stream(auth, StreamListener()) 
     sapi.filter(locations=GEOBOX_LA)
 
-print("Done collecting data")
-HeatMap()
+print("Stream stopped")
