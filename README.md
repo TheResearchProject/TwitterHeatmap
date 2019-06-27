@@ -1,5 +1,5 @@
 # TweetCollector
-This is a python application that scrapes tweets from a geotagged location (in this case a box near the Los Angeles area) and displays a heatmap where people are tweeting from. Note: OAuth authentication keys needed and read from a text file named "keys.txt"
+This is a python application that scrapes tweets from a geotagged location (in this case near the Los Angeles area) and displays a heatmap where people are tweeting from. Note: OAuth authentication keys needed and read from a text file named "keys.txt"
 
 ## Screenshots
 ![alt text](https://github.com/sondr0p/TwitterHeatmap/blob/master/screenshots/california.png)
