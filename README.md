@@ -8,7 +8,7 @@ This is a python application that scrapes tweets from a geotagged location (in t
 ## Requirements
 - tweepy Twitter API to scrape tweets (https://www.tweepy.org/)
 - folium to display map (https://python-visualization.github.io/folium/)
-- pandas, matplotlib, and seaborn for data manipulation
+- pandas (http://pandas.pydata.org/pandas-docs/stable/) and matplotlib (https://matplotlib.org/) for data manipulation and heatmap
 
 ## Usage
 ```
