@@ -10,7 +10,6 @@ import csv
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from selenium import webdriver
 import threading
 
 # Get authentication keys from file
@@ -31,13 +30,18 @@ api = tweepy.API(auth)
 
 # Read data from csv and add to heatmap
 def HeatMap():
-    m = folium.Map(location=[34.0522, -118.2437], zoom_start=8)
-    m.save('map.html')
-    print("Map generated")
-    df = pd.read_csv('data.csv')
-    arr = df[['latitude', 'longitude']].values
-    m.add_child(plugins.HeatMap(arr, radius=15))
-    m.save('map.html')
+    try:
+        df = pd.read_csv('data.csv')
+        arr = df[['latitude', 'longitude']].values
+        m = folium.Map(location=[34.0522, -118.2437], zoom_start=10)
+        m.add_child(plugins.HeatMap(arr, radius=15))
+        m.save('map.html')
+        print("Map generated")
+    except Exception as e:
+        print(e)
+
+# TODO PING FUNCTION
+# TODO CLEAN CSV
 
 # Function to run a function for a certain amount of time
 def set_interval(func, sec):
@@ -49,7 +53,7 @@ def set_interval(func, sec):
     return t
 
 # Refresh heatmap every x seconds
-x = 10
+x = 60
 set_interval(HeatMap, x)
 
 with open('data.csv', mode='a') as csv_file:
@@ -80,6 +84,7 @@ with open('data.csv', mode='a') as csv_file:
                     if(isinstance(latitude, float) and isinstance(longitude, float)):
                         # Write to csv file
                         writer.writerow({'latitude': latitude, 'longitude': longitude, 'date_created': created_at})
+                        # Ping(latitude, longitude)
                         print(latitude, longitude)
                 return True
             except Exception as e:
@@ -100,4 +105,5 @@ with open('data.csv', mode='a') as csv_file:
     sapi = tweepy.streaming.Stream(auth, StreamListener()) 
     sapi.filter(locations=GEOBOX_LA)
 
+# SHOULD NOT GET HERE, STREAM CRASHED
 print("Stream stopped")
