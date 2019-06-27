@@ -23,7 +23,6 @@ imgkit==1.0.2
 ipaddress==1.0.22
 Jinja2==2.10.1
 kiwisolver==1.1.0
-Magic-file-extensions==0.2
 MarkupSafe==1.1.1
 matplotlib==2.2.4
 monotonic==1.5
