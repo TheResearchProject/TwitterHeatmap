@@ -18,7 +18,6 @@ google-auth==1.6.3
 google-auth-oauthlib==0.3.0
 googleapis-common-protos==1.5.9
 grpcio==1.20.0
-gyp==0.1
 idna==2.8
 imgkit==1.0.2
 ipaddress==1.0.22
